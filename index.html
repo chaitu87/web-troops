@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TEST</title>
+</head>
+
+<body>
+    <progress value="0" max="100" id="uploader"></progress>
+    <input type="file" value="upload" id="fileButton">
+    <h1 id="dbVal"></h1>
+    <script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="//www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyBhpEXKaCefGsRTfZ0tLscex7q3DA8DetM",
+        authDomain: "protomvp-3cd8a.firebaseapp.com",
+        databaseURL: "https://protomvp-3cd8a.firebaseio.com",
+        projectId: "protomvp-3cd8a",
+        storageBucket: "protomvp-3cd8a.appspot.com",
+        messagingSenderId: "711164532782"
+    };
+    firebase.initializeApp(config);
+
+    $(function() {
+        var dbVal = document.getElementById('dbVal');
+        var dbRef = firebase.database().ref().child('text');
+        dbRef.on('value', snap => dbVal.innerText = snap.val());
+
+        var fileButton = document.getElementById('fileButton');
+        fileButton.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            var storageRef = firebase.storage().ref('sweet_gifs/' + file.name);
+            var task = storageRef.put(file);
+            task.on('state_changed',
+                function progress(snapshot) {
+                	var percentage = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+                	uploader.value = percentage;
+                },
+                function error(err) {
+
+                },
+                function complete() {
+
+                });
+        });
+    });
+    </script>
+</body>
+
+</html>
